@@ -1,17 +1,13 @@
 package com.example.university.model;
 
 import com.example.university.constant.Days;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "lectures")
-@Getter
-@Setter
-@ToString
+@Data
 public class Lecture {
 
     @Id
