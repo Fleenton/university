@@ -1,5 +1,6 @@
 package com.example.university.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -25,5 +26,6 @@ public class Student {
 
     @ManyToOne
     @JoinColumn(name = "group_id")
+    @JsonBackReference
     private Group studentGroup;
 }

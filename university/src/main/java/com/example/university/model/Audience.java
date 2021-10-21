@@ -1,10 +1,11 @@
 package com.example.university.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "audience")
@@ -19,6 +20,7 @@ public class Audience {
     @Column(name = "audience_number")
     private int audienceNumber;
 
-    @OneToMany(mappedBy = "audience")
-    private Set<Lecture> lectures = new HashSet<>();
+    @OneToMany(mappedBy = "audience", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Lecture> lectures = new ArrayList<>();
 }

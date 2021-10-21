@@ -1,6 +1,7 @@
 package com.example.university.model;
 
 import com.example.university.constant.Days;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -24,9 +25,11 @@ public class Lecture {
 
     @ManyToOne
     @JoinColumn(name = "group_id")
+    @JsonBackReference
     private Group group;
 
     @ManyToOne
     @JoinColumn(name = "audience_id")
+    @JsonBackReference
     private Audience audience;
 }
