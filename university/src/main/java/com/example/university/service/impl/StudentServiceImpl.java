@@ -1,6 +1,5 @@
 package com.example.university.service.impl;
 
-import com.example.university.model.Lecture;
 import com.example.university.model.Student;
 import com.example.university.repository.StudentRepository;
 import com.example.university.service.StudentService;

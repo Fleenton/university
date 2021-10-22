@@ -1,6 +1,5 @@
 package com.example.university.service;
 
-import com.example.university.model.Audience;
 import com.example.university.model.Group;
 
 import java.util.List;

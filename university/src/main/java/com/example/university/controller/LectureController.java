@@ -1,5 +1,6 @@
 package com.example.university.controller;
 
+import com.example.university.constant.Days;
 import com.example.university.model.Group;
 import com.example.university.model.Lecture;
 import com.example.university.service.LectureService;
@@ -73,5 +74,17 @@ public class LectureController {
         }
 
         return ResponseEntity.ok(lectureList);
+    }
+
+    @GetMapping("timetable/{id}/{day}")
+    public ResponseEntity<List<Lecture>> getTimetable(@PathVariable("id") Long groupId,
+                                                      @PathVariable("day") Days day){
+        List<Lecture> timetable = this.lectureService.findTimetable(groupId, day);
+
+        if (timetable.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(timetable);
     }
 }

@@ -1,6 +1,6 @@
 package com.example.university.service.impl;
 
-import com.example.university.model.Group;
+import com.example.university.constant.Days;
 import com.example.university.model.Lecture;
 import com.example.university.repository.LectureRepository;
 import com.example.university.service.LectureService;
@@ -40,5 +40,10 @@ public class LectureServiceImpl implements LectureService {
         Lecture lecture = lectureRepo.findById(lectureId).orElseThrow();
         lecture.setLectureId(lectureData.getLectureId());
         return lectureRepo.save(lecture);
+    }
+
+    @Override
+    public List<Lecture> findTimetable(Long groupId, Days day) {
+        return lectureRepo.findTimetable(groupId, day);
     }
 }
