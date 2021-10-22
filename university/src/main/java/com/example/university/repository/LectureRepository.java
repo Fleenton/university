@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
-    @Query("SELECT l FROM Lecture l WHERE l.group = :groupId and l.days = :day")
+    @Query("SELECT l FROM Lecture l WHERE l.group.groupId = :groupId and l.days = :day")
     List<Lecture> findTimetable(Long groupId, Days day);
 }
