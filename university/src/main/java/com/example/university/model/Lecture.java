@@ -21,7 +21,7 @@ public class Lecture {
 
     @Column(name = "lecture_day")
     @Enumerated(EnumType.STRING)
-    private Days days;
+    private Days day;
 
     @ManyToOne
     @JoinColumn(name = "group_id")
