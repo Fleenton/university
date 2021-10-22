@@ -77,13 +77,9 @@ public class LectureController {
     }
 
     @GetMapping("timetable/{id}/{day}")
-    public ResponseEntity<List<Lecture>> getTimetable(@PathVariable("id") Long groupId,
-                                                      @PathVariable("day") Days day){
-        List<Lecture> timetable = this.lectureService.findTimetable(groupId, day);
-
-        if (timetable.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<List<Lecture>> getTimetable(@PathVariable("id") Long studentId,
+                                                      @PathVariable("day") Days day) {
+        List<Lecture> timetable = this.lectureService.findTimetable(studentId, day);
 
         return ResponseEntity.ok(timetable);
     }

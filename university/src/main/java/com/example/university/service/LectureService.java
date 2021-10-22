@@ -17,5 +17,5 @@ public interface LectureService {
 
     Lecture update(Long lectureId, Lecture lecture);
 
-    List<Lecture> findTimetable(Long groupId, Days day);
+    List<Lecture> findTimetable(Long studentId, Days day);
 }
