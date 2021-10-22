@@ -14,7 +14,6 @@ public class AudienceServiceImpl implements AudienceService {
 
     private final AudienceRepository audienceRepo;
 
-
     @Override
     public Audience getById(Long id) {
         return audienceRepo.findById(id).orElseThrow();

@@ -7,9 +7,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "student_groups")
-@Data
 public class Group {
 
     @Id
