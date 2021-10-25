@@ -4,53 +4,44 @@ import com.example.university.constant.Days;
 import com.example.university.model.Audience;
 import com.example.university.model.Group;
 import com.example.university.model.Lecture;
-import com.example.university.repository.AudienceRepository;
-import com.example.university.repository.GroupRepository;
 import com.example.university.repository.LectureRepository;
+import com.example.university.repository.StudentRepository;
+import com.example.university.service.LectureService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Rollback(false)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {LectureServiceImpl.class})
 class LectureServiceImplTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
+    @MockBean
     private LectureRepository lectureRepo;
 
-    @Test
-    void getById() {
-        Lecture lecture = lectureRepo.getById(1L);
+    @MockBean
+    private StudentRepository studentRepo;
 
-        assertThat(lecture.getLectureId()).isEqualTo(1L);
-    }
+    @Autowired
+    private LectureService lectureService;
 
     @Test
     void save() {
-        Lecture lecture = new Lecture();
-        lecture.setLectureId(1L);
-        lecture.setTitleLecture("Biology");
-        lecture.setDay(Days.SUNDAY);
-        lecture.getGroup().setGroupId(1L);
-        lecture.getAudience().setAudienceId(2L);
+        Lecture lecture = getLecture();
+        lectureService.save(lecture);
 
-        Lecture saveLecture = lectureRepo.save(lecture);
-
-        Lecture existLecture = entityManager.find(Lecture.class, saveLecture.getLectureId());
-
-        assertThat(lecture.getTitleLecture()).isEqualTo(existLecture.getTitleLecture());
+        assertThat(lecture.getLectureId()).isGreaterThan(0);
     }
 
     @Test
@@ -71,43 +62,117 @@ class LectureServiceImplTest {
     }
 
     @Test
+    void findTimetable() {
+
+    }
+
+    @Test
+    void getById() {
+        when(lectureRepo.findById(1L))
+                .thenReturn(Optional.of(getLecture()));
+
+        assertThat(lectureService.getById(1L).getLectureId()).isEqualTo(1L);
+    }
+
+    @Test
     void getAll() {
-        Lecture lecture = new Lecture();
-        lecture.setLectureId(1L);
-        lecture.setTitleLecture("Biology");
-        lecture.setDay(Days.SUNDAY);
-        lecture.getGroup().setGroupId(1L);
-        lecture.getAudience().setAudienceId(2L);
+        when(lectureRepo.findAll())
+                .thenReturn(getLectureList());
 
-        lectureRepo.save(lecture);
+        List<Lecture> all = lectureService.getAll();
 
-        List<Lecture> lectureList = lectureRepo.findAll();
-
-        assertThat(lectureList.size()).isGreaterThan(0);
+        assertFalse(all.isEmpty());
+        assertEquals(3, all.size());
+        assertEquals("Mathematics", all.get(1).getTitleLecture());
     }
 
     @Test
     void update() {
-        Lecture lecture = new Lecture();
-        lecture.setLectureId(1L);
-        lecture.setTitleLecture("Biology");
-        lecture.setDay(Days.SUNDAY);
-        lecture.getGroup().setGroupId(1L);
-        lecture.getAudience().setAudienceId(2L);
+        when(lectureRepo.findById(1L))
+                .thenReturn(Optional.of(getLecture()));
 
-        lectureRepo.save(lecture);
+        when(lectureRepo.save(any(Lecture.class))).then(returnsFirstArg());
 
-        lecture = lectureRepo.getById(1L);
+        Lecture lecture = getLecture();
+        Lecture lectureData = getLectureData();
 
-        lecture.setTitleLecture("Physics");
+        Lecture updatedLecture = lectureService.update(1L, lectureData);
 
-        Lecture lectureUpdated = lectureRepo.save(lecture);
-
-        assertThat(lectureUpdated.getTitleLecture()).isEqualTo("Physics");
+        assertNotNull(updatedLecture);
+        assertEquals(updatedLecture.getLectureId(), lecture.getLectureId());
+        assertNotEquals(updatedLecture.getTitleLecture(), lecture.getTitleLecture());
     }
 
-    @Test
-    void findTimetable() {
+    Lecture getLecture() {
+        return Lecture.builder()
+                .lectureId(1L)
+                .titleLecture("Biology")
+                .day(Days.MONDAY)
+                .group(Group.builder()
+                        .groupId(1L)
+                        .groupNumber(100)
+                        .build())
+                .audience(Audience.builder()
+                        .audienceId(1L)
+                        .audienceNumber(1)
+                        .build())
+                .build();
+    }
 
+    Lecture getLectureData() {
+        return Lecture.builder()
+                .titleLecture("Chemistry")
+                .day(Days.MONDAY)
+                .group(Group.builder()
+                        .groupId(1L)
+                        .groupNumber(101)
+                        .build())
+                .audience(Audience.builder()
+                        .audienceId(1L)
+                        .audienceNumber(1)
+                        .build())
+                .build();
+    }
+
+    private List<Lecture> getLectureList() {
+        return List.of(Lecture.builder()
+                        .lectureId(1L)
+                        .titleLecture("Biology")
+                        .day(Days.MONDAY)
+                        .group(Group.builder()
+                                .groupId(1L)
+                                .groupNumber(102)
+                                .build())
+                        .audience(Audience.builder()
+                                .audienceId(1L)
+                                .audienceNumber(1)
+                                .build())
+                        .build(),
+                Lecture.builder()
+                        .lectureId(2L)
+                        .titleLecture("Mathematics")
+                        .day(Days.MONDAY)
+                        .group(Group.builder()
+                                .groupId(2L)
+                                .groupNumber(103)
+                                .build())
+                        .audience(Audience.builder()
+                                .audienceId(2L)
+                                .audienceNumber(2)
+                                .build())
+                        .build(),
+                Lecture.builder()
+                        .lectureId(3L)
+                        .titleLecture("Chemistry")
+                        .day(Days.MONDAY)
+                        .group(Group.builder()
+                                .groupId(3L)
+                                .groupNumber(104)
+                                .build())
+                        .audience(Audience.builder()
+                                .audienceId(3L)
+                                .audienceNumber(3)
+                                .build())
+                        .build());
     }
 }

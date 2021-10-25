@@ -2,93 +2,117 @@ package com.example.university.service.impl;
 
 import com.example.university.model.Group;
 import com.example.university.repository.GroupRepository;
+import com.example.university.service.GroupService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Rollback(false)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {GroupServiceImpl.class})
 class GroupServiceImplTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
+    @MockBean
     private GroupRepository groupRepo;
 
-    @Test
-    void getById() {
-        Group group = groupRepo.getById(1L);
-
-        assertThat(group.getGroupId()).isEqualTo(1L);
-    }
+    @Autowired
+    private GroupService groupService;
 
     @Test
     void save() {
-        Group group = new Group();
-        group.setGroupId(1L);
-        group.setGroupNumber(358);
+        Group group = getGroup();
+        groupService.save(group);
 
-        Group saveGroup = groupRepo.save(group);
-
-        Group existGroup = entityManager.find(Group.class, saveGroup.getGroupId());
-
-        assertThat(group.getGroupNumber()).isEqualTo(existGroup.getGroupNumber());
+        assertThat(group.getGroupId()).isGreaterThan(0);
     }
 
     @Test
     void delete() {
-        Group group = groupRepo.getById(1L);
+        when(groupRepo.findById(1L))
+                .thenReturn(Optional.of(getGroup()));
 
-        groupRepo.delete(group);
+        groupService.delete(getGroup().getGroupId());
 
-        Group group1 = null;
+        Group groupDel = groupService.getById(getGroup().getGroupId());
 
-        Optional<Group> optionalGroup = groupRepo.findById(1L);
+        assertThat(groupDel).isNull();
+    }
 
-        if (optionalGroup.isPresent()) {
-            group1 = optionalGroup.get();
-        }
+    @Test
+    void getById() {
+        when(groupRepo.findById(1L))
+                .thenReturn(Optional.of(getGroup()));
 
-        assertThat(group1).isNull();
+        assertThat(groupService.getById(1L).getGroupId()).isEqualTo(1L);
     }
 
     @Test
     void getAll() {
-        Group group = new Group();
-        group.setGroupId(1L);
-        group.setGroupNumber(358);
+        when(groupRepo.findAll())
+                .thenReturn(getGroupList());
 
-        groupRepo.save(group);
+        List<Group> all = groupService.getAll();
 
-        List<Group> groupList = groupRepo.findAll();
-
-        assertThat(groupList.size()).isGreaterThan(0);
+        assertFalse(all.isEmpty());
+        assertEquals(3, all.size());
+        assertEquals(103, all.get(2).getGroupNumber());
     }
 
     @Test
     void update() {
-        Group group = new Group();
-        group.setGroupId(1L);
-        group.setGroupNumber(358);
+        when(groupRepo.findById(1L))
+                .thenReturn(Optional.of(getGroup()));
 
-        groupRepo.save(group);
+        when(groupRepo.save(any(Group.class))).then(returnsFirstArg());
 
-        group = groupRepo.getById(1L);
+        Group group = getGroup();
+        Group groupData = getGroupData();
 
-        group.setGroupNumber(211);
+        Group updatedGroup = groupService.update(1L, groupData);
 
-        Group groupUpdated = groupRepo.save(group);
+        assertNotNull(updatedGroup);
+        assertEquals(updatedGroup.getGroupId(), group.getGroupId());
+        assertNotEquals(updatedGroup.getGroupNumber(), group.getGroupNumber());
+    }
 
-        assertThat(groupUpdated.getGroupNumber()).isEqualTo(211);
+    Group getGroup() {
+        return Group.builder()
+                .groupId(1L)
+                .groupNumber(100)
+                .build();
+    }
+
+    Group getGroupData() {
+        return Group.builder()
+                .groupNumber(200)
+                .build();
+    }
+
+    private List<Group> getGroupList() {
+        return List.of(Group.builder()
+                        .groupId(1L)
+                        .groupNumber(101)
+                        .build(),
+                Group.builder()
+                        .groupId(2L)
+                        .groupNumber(102)
+                        .build(),
+                Group.builder()
+                        .groupId(3L)
+                        .groupNumber(103)
+                        .build());
     }
 }

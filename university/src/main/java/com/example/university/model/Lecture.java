@@ -1,11 +1,17 @@
 package com.example.university.model;
 
 import com.example.university.constant.Days;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "lectures")
 public class Lecture {

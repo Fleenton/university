@@ -1,92 +1,105 @@
 package com.example.university.service.impl;
 
 import com.example.university.model.Audience;
+import com.example.university.model.Group;
 import com.example.university.repository.AudienceRepository;
+import com.example.university.service.AudienceService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Rollback(false)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {AudienceServiceImpl.class})
 class AudienceServiceImplTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
+    @MockBean
+    private AudienceRepository audienceRepository;
 
     @Autowired
-    private AudienceRepository audienceRepo;
+    private AudienceService audienceService;
 
     @Test
     void getById() {
-        Audience audience = audienceRepo.getById(1L);
+        when(audienceRepository.findById(1L))
+                .thenReturn(Optional.of(getAudience()));
 
-        assertThat(audience.getAudienceId()).isEqualTo(1L);
+        assertThat(audienceService.getById(1L).getAudienceId()).isEqualTo(1L);
     }
 
     @Test
     void save() {
-        Audience audience = new Audience();
-        audience.setAudienceId(1L);
-        audience.setAudienceNumber(95);
+        Audience audience = getAudience();
+        audienceService.save(audience);
 
-        Audience saveAudience = audienceRepo.save(audience);
-
-        Audience existAudience = entityManager.find(Audience.class, saveAudience.getAudienceId());
-
-        assertThat(audience.getAudienceNumber()).isEqualTo(existAudience.getAudienceNumber());
-    }
-
-    @Test
-    void delete() {
-        Audience audience = audienceRepo.getById(1L);
-
-        audienceRepo.delete(audience);
-
-        Audience audience1 = null;
-
-        Optional<Audience> optionalAudience = audienceRepo.findById(1L);
-
-        if (optionalAudience.isPresent()) {
-            audience1 = optionalAudience.get();
-        }
-
-        assertThat(audience1).isNull();
+        assertThat(audience.getAudienceId()).isGreaterThan(0);
     }
 
     @Test
     void getAll() {
-        Audience audience = new Audience();
-        audience.setAudienceId(1L);
-        audience.setAudienceNumber(95);
-        audienceRepo.save(audience);
+        when(audienceRepository.findAll())
+                .thenReturn(getAudienceList());
 
-        List<Audience> audienceList = audienceRepo.findAll();
+        List<Audience> all = audienceService.getAll();
 
-        assertThat(audienceList.size()).isGreaterThan(0);
+        assertFalse(all.isEmpty());
+        assertEquals(3, all.size());
+        assertEquals(103, all.get(2).getAudienceNumber());
     }
 
     @Test
     void update() {
-        Audience audience = new Audience();
-        audience.setAudienceId(1L);
-        audience.setAudienceNumber(95);
-        audienceRepo.save(audience);
+        when(audienceRepository.findById(1L))
+                .thenReturn(Optional.of(getAudience()));
 
-        audience = audienceRepo.getById(1L);
+        when(audienceRepository.save(any(Audience.class))).then(returnsFirstArg());
 
-        audience.setAudienceNumber(60);
+        Audience audience = getAudience();
+        Audience audienceData = getAudienceData();
 
-        Audience audienceUpdated = audienceRepo.save(audience);
+        Audience updatedAudience = audienceService.update(1L, audienceData);
 
-        assertThat(audienceUpdated.getAudienceNumber()).isEqualTo(60);
+        assertNotNull(updatedAudience);
+        assertEquals(updatedAudience.getAudienceId(), audience.getAudienceId());
+        assertNotEquals(updatedAudience.getAudienceNumber(), audience.getAudienceNumber());
+    }
+
+    Audience getAudience() {
+        return Audience.builder()
+                .audienceId(1L)
+                .audienceNumber(100)
+                .build();
+    }
+
+    Audience getAudienceData() {
+        return Audience.builder()
+                .audienceNumber(200)
+                .build();
+    }
+
+    private List<Audience> getAudienceList() {
+        return List.of(Audience.builder()
+                        .audienceId(1L)
+                        .audienceNumber(101)
+                        .build(),
+                Audience.builder()
+                        .audienceId(2L)
+                        .audienceNumber(102)
+                        .build(),
+                Audience.builder()
+                        .audienceId(3L)
+                        .audienceNumber(103)
+                        .build());
     }
 }
