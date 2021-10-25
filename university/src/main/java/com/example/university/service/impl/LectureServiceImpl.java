@@ -42,7 +42,23 @@ public class LectureServiceImpl implements LectureService {
     @Override
     public Lecture update(Long lectureId, Lecture lectureData) {
         Lecture lecture = lectureRepo.findById(lectureId).orElseThrow();
-        lecture.setLectureId(lectureData.getLectureId());
+
+        if (lectureData.getTitleLecture() != null) {
+            lecture.setTitleLecture(lectureData.getTitleLecture());
+        }
+
+        if (lectureData.getAudience() != null) {
+            lecture.setAudience(lectureData.getAudience());
+        }
+
+        if (lectureData.getGroup() != null) {
+            lecture.setGroup(lectureData.getGroup());
+        }
+
+        if (lectureData.getDay() != null) {
+            lecture.setDay(lectureData.getDay());
+        }
+
         return lectureRepo.save(lecture);
     }
 

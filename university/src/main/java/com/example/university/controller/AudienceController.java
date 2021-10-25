@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/audience/")
+@RequestMapping(value = "/audience/")
 public class AudienceController {
 
     private final AudienceService audienceService;

@@ -42,7 +42,7 @@ class LectureServiceImplTest {
         Lecture lecture = new Lecture();
         lecture.setLectureId(1L);
         lecture.setTitleLecture("Biology");
-        lecture.setDays(Days.SUNDAY);
+        lecture.setDay(Days.SUNDAY);
         lecture.getGroup().setGroupId(1L);
         lecture.getAudience().setAudienceId(2L);
 
@@ -75,7 +75,7 @@ class LectureServiceImplTest {
         Lecture lecture = new Lecture();
         lecture.setLectureId(1L);
         lecture.setTitleLecture("Biology");
-        lecture.setDays(Days.SUNDAY);
+        lecture.setDay(Days.SUNDAY);
         lecture.getGroup().setGroupId(1L);
         lecture.getAudience().setAudienceId(2L);
 
@@ -91,7 +91,7 @@ class LectureServiceImplTest {
         Lecture lecture = new Lecture();
         lecture.setLectureId(1L);
         lecture.setTitleLecture("Biology");
-        lecture.setDays(Days.SUNDAY);
+        lecture.setDay(Days.SUNDAY);
         lecture.getGroup().setGroupId(1L);
         lecture.getAudience().setAudienceId(2L);
 

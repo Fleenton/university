@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  university-app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    image: university-app
+    container_name: university-app
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    ports:
+      - 8080:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

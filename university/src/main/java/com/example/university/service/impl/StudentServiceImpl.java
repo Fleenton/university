@@ -37,7 +37,23 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student update(Long studentId, Student studentData) {
         Student student = studentRepo.findById(studentId).orElseThrow();
-        student.setStudentId(studentData.getStudentId());
+
+        if (studentData.getFirstName() != null) {
+            student.setFirstName(studentData.getFirstName());
+        }
+
+        if (studentData.getLastName() != null) {
+            student.setLastName(studentData.getLastName());
+        }
+
+        if (studentData.getCourse() != null) {
+            student.setCourse(studentData.getCourse());
+        }
+
+        if (studentData.getStudentGroup() != null) {
+            student.setStudentGroup(studentData.getStudentGroup());
+        }
+
         return studentRepo.save(student);
     }
 }

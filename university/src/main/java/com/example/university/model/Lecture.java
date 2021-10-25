@@ -1,7 +1,6 @@
 package com.example.university.model;
 
 import com.example.university.constant.Days;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +12,8 @@ public class Lecture {
 
     @Id
     @Column(name = "id", nullable = false, unique = true)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lectures_id_seq")
+    @SequenceGenerator(name = "lectures_id_seq", sequenceName = "lectures_id_seq", initialValue = 100, allocationSize = 1)
     private Long lectureId;
 
     @Column(name = "title_lecture")
@@ -25,11 +25,9 @@ public class Lecture {
 
     @ManyToOne
     @JoinColumn(name = "group_id")
-    @JsonBackReference
     private Group group;
 
     @ManyToOne
     @JoinColumn(name = "audience_id")
-    @JsonBackReference
     private Audience audience;
 }

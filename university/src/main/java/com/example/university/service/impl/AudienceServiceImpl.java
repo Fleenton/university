@@ -37,7 +37,11 @@ public class AudienceServiceImpl implements AudienceService {
     @Override
     public Audience update(Long audienceId, Audience audienceData) {
         Audience audience = audienceRepo.findById(audienceId).orElseThrow();
-        audience.setAudienceNumber(audienceData.getAudienceNumber());
+
+        if (audienceData.getAudienceNumber() != null) {
+            audience.setAudienceNumber(audienceData.getAudienceNumber());
+        }
+
         return audienceRepo.save(audience);
     }
 }

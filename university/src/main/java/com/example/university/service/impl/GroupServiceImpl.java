@@ -37,7 +37,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Group update(Long groupId, Group groupData) {
         Group group = groupRepo.findById(groupId).orElseThrow();
-        group.setGroupNumber(groupData.getGroupNumber());
+
+        if (groupData.getGroupNumber() != null) {
+            group.setGroupNumber(groupData.getGroupNumber());
+        }
+
         return groupRepo.save(group);
     }
 }

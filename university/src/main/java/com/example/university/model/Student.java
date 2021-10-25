@@ -1,6 +1,5 @@
 package com.example.university.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,7 +11,8 @@ public class Student {
 
     @Id
     @Column(name = "id", nullable = false, unique = true)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_id_seq")
+    @SequenceGenerator(name = "student_id_seq", sequenceName = "student_id_seq", initialValue = 100, allocationSize = 1)
     private Long studentId;
 
     @Column(name = "first_name", nullable = false, length = 30)
@@ -22,10 +22,9 @@ public class Student {
     private String lastName;
 
     @Column(name = "course")
-    private int course;
+    private Integer course;
 
     @ManyToOne
     @JoinColumn(name = "group_id")
-    @JsonBackReference
     private Group studentGroup;
 }
