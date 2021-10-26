@@ -2,7 +2,6 @@ package com.example.university.service.impl;
 
 import com.example.university.model.Group;
 import com.example.university.model.Student;
-import com.example.university.repository.LectureRepository;
 import com.example.university.repository.StudentRepository;
 import com.example.university.service.StudentService;
 import org.junit.jupiter.api.Test;
@@ -28,11 +27,15 @@ class StudentServiceImplTest {
     @MockBean
     private StudentRepository studentRepo;
 
-    @MockBean
-    private LectureRepository lectureRepository;
-
     @Autowired
     private StudentService studentService;
+
+    @Test
+    void getById() {
+        when(studentRepo.findById(1L)).thenReturn(Optional.of(getStudent()));
+
+        assertThat(studentService.getById(1L).getStudentId()).isEqualTo(1L);
+    }
 
     @Test
     void save() {
@@ -48,29 +51,20 @@ class StudentServiceImplTest {
 
         studentRepo.delete(student);
 
-        Student student1 = null;
+        Student studentDel = null;
 
         Optional<Student> optionalStudent = studentRepo.findById(1L);
 
         if (optionalStudent.isPresent()) {
-            student1 = optionalStudent.get();
+            studentDel = optionalStudent.get();
         }
 
-        assertThat(student1).isNull();
-    }
-
-    @Test
-    void getById() {
-        when(studentRepo.findById(1L))
-                .thenReturn(Optional.of(getStudent()));
-
-        assertThat(studentService.getById(1L).getStudentId()).isEqualTo(1L);
+        assertThat(studentDel).isNull();
     }
 
     @Test
     void getAll() {
-        when(studentRepo.findAll())
-                .thenReturn(getStudentList());
+        when(studentRepo.findAll()).thenReturn(getStudentList());
 
         List<Student> all = studentService.getAll();
 
@@ -81,9 +75,7 @@ class StudentServiceImplTest {
 
     @Test
     void update() {
-        when(studentRepo.findById(1L))
-                .thenReturn(Optional.of(getStudent()));
-
+        when(studentRepo.findById(1L)).thenReturn(Optional.of(getStudent()));
         when(studentRepo.save(any(Student.class))).then(returnsFirstArg());
 
         Student student = getStudent();

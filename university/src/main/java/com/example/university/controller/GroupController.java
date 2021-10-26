@@ -2,6 +2,7 @@ package com.example.university.controller;
 
 import com.example.university.model.Group;
 import com.example.university.service.GroupService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,13 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping("{id}")
+    @ApiOperation("Get all groups.")
     public ResponseEntity<Group> getGroup(@PathVariable("id") Long groupId) {
         if (groupId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        Group group = this.groupService.getById(groupId);
+        Group group = groupService.getById(groupId);
 
         if (group == null) {
             return ResponseEntity.notFound().build();
@@ -31,6 +33,7 @@ public class GroupController {
     }
 
     @PostMapping("")
+    @ApiOperation("Save group.")
     public ResponseEntity<Group> saveGroup(@RequestBody Group group) {
 
         if (group == null) {
@@ -42,6 +45,7 @@ public class GroupController {
     }
 
     @PutMapping("{id}")
+    @ApiOperation("Update group by id.")
     public ResponseEntity<Group> updateGroup(@PathVariable("id") Long groupId, @RequestBody Group group) {
 
         if (groupId == null || group == null) {
@@ -52,8 +56,9 @@ public class GroupController {
     }
 
     @DeleteMapping("{id}")
+    @ApiOperation("Delete group.")
     public ResponseEntity<Group> deleteGroup(@PathVariable("id") Long id) {
-        Group group = this.groupService.getById(id);
+        Group group = groupService.getById(id);
 
         if (group == null) {
             return ResponseEntity.notFound().build();
@@ -64,8 +69,9 @@ public class GroupController {
     }
 
     @GetMapping("")
+    @ApiOperation("Get all groups.")
     public ResponseEntity<List<Group>> getAllGroup() {
-        List<Group> groupList = this.groupService.getAll();
+        List<Group> groupList = groupService.getAll();
 
         if (groupList.isEmpty()) {
             return ResponseEntity.notFound().build();

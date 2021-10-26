@@ -1,9 +1,9 @@
 package com.example.university.controller;
 
-import com.example.university.constant.Days;
 import com.example.university.model.Group;
 import com.example.university.model.Lecture;
 import com.example.university.service.LectureService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +18,13 @@ public class LectureController {
     private final LectureService lectureService;
 
     @GetMapping("{id}")
+    @ApiOperation("Get lecture by id.")
     public ResponseEntity<Lecture> getLecture(@PathVariable("id") Long lectureId) {
         if (lectureId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        Lecture lecture = this.lectureService.getById(lectureId);
+        Lecture lecture = lectureService.getById(lectureId);
 
         if (lecture == null) {
             return ResponseEntity.notFound().build();
@@ -33,17 +34,19 @@ public class LectureController {
     }
 
     @PostMapping("")
+    @ApiOperation("Save lecture.")
     public ResponseEntity<Lecture> saveLecture(@RequestBody Lecture lecture) {
 
         if (lecture == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        this.lectureService.save(lecture);
+        lectureService.save(lecture);
         return ResponseEntity.ok(lecture);
     }
 
     @PutMapping("{id}")
+    @ApiOperation("Update lecture by id.")
     public ResponseEntity<Lecture> updateLecture(@PathVariable("id") Long lectureId, @RequestBody Lecture lecture) {
 
         if (lectureId == null || lecture == null) {
@@ -54,33 +57,27 @@ public class LectureController {
     }
 
     @DeleteMapping("{id}")
+    @ApiOperation("Delete lecture by id.")
     public ResponseEntity<Group> deleteLecture(@PathVariable("id") Long id) {
-        Lecture lecture = this.lectureService.getById(id);
+        Lecture lecture = lectureService.getById(id);
 
         if (lecture == null) {
             return ResponseEntity.notFound().build();
         }
 
-        this.lectureService.delete(id);
+        lectureService.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("")
+    @ApiOperation("Get all lectures.")
     public ResponseEntity<List<Lecture>> getAllLecture() {
-        List<Lecture> lectureList = this.lectureService.getAll();
+        List<Lecture> lectureList = lectureService.getAll();
 
         if (lectureList.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(lectureList);
-    }
-
-    @GetMapping("timetable/{id}/{day}")
-    public ResponseEntity<List<Lecture>> getTimetable(@PathVariable("id") Long studentId,
-                                                      @PathVariable("day") Days day) {
-        List<Lecture> timetable = this.lectureService.findTimetable(studentId, day);
-
-        return ResponseEntity.ok(timetable);
     }
 }

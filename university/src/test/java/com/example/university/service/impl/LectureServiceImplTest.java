@@ -5,7 +5,6 @@ import com.example.university.model.Audience;
 import com.example.university.model.Group;
 import com.example.university.model.Lecture;
 import com.example.university.repository.LectureRepository;
-import com.example.university.repository.StudentRepository;
 import com.example.university.service.LectureService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,11 +29,15 @@ class LectureServiceImplTest {
     @MockBean
     private LectureRepository lectureRepo;
 
-    @MockBean
-    private StudentRepository studentRepo;
-
     @Autowired
     private LectureService lectureService;
+
+    @Test
+    void getById() {
+        when(lectureRepo.findById(1L)).thenReturn(Optional.of(getLecture()));
+
+        assertThat(lectureService.getById(1L).getLectureId()).isEqualTo(1L);
+    }
 
     @Test
     void save() {
@@ -50,28 +53,15 @@ class LectureServiceImplTest {
 
         lectureRepo.delete(lecture);
 
-        Lecture lecture1 = null;
+        Lecture lectureDel = null;
 
         Optional<Lecture> optionalLecture = lectureRepo.findById(1L);
 
         if (optionalLecture.isPresent()) {
-            lecture1 = optionalLecture.get();
+            lectureDel = optionalLecture.get();
         }
 
-        assertThat(lecture1).isNull();
-    }
-
-    @Test
-    void findTimetable() {
-
-    }
-
-    @Test
-    void getById() {
-        when(lectureRepo.findById(1L))
-                .thenReturn(Optional.of(getLecture()));
-
-        assertThat(lectureService.getById(1L).getLectureId()).isEqualTo(1L);
+        assertThat(lectureDel).isNull();
     }
 
     @Test
@@ -88,9 +78,7 @@ class LectureServiceImplTest {
 
     @Test
     void update() {
-        when(lectureRepo.findById(1L))
-                .thenReturn(Optional.of(getLecture()));
-
+        when(lectureRepo.findById(1L)).thenReturn(Optional.of(getLecture()));
         when(lectureRepo.save(any(Lecture.class))).then(returnsFirstArg());
 
         Lecture lecture = getLecture();

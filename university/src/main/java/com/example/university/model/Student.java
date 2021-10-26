@@ -31,6 +31,6 @@ public class Student {
     private Integer course;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "group_id", nullable = false)
     private Group studentGroup;
 }

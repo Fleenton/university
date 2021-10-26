@@ -8,10 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +30,13 @@ class GroupServiceImplTest {
     private GroupService groupService;
 
     @Test
+    void getById() {
+        when(groupRepo.findById(1L)).thenReturn(Optional.of(getGroup()));
+
+        assertThat(groupService.getById(1L).getGroupId()).isEqualTo(1L);
+    }
+
+    @Test
     void save() {
         Group group = getGroup();
         groupService.save(group);
@@ -41,28 +46,24 @@ class GroupServiceImplTest {
 
     @Test
     void delete() {
-        when(groupRepo.findById(1L))
-                .thenReturn(Optional.of(getGroup()));
+        Group group = groupRepo.getById(1L);
 
-        groupService.delete(getGroup().getGroupId());
+        groupRepo.delete(group);
 
-        Group groupDel = groupService.getById(getGroup().getGroupId());
+        Group groupDel = null;
+
+        Optional<Group> optionalGroup = groupRepo.findById(1L);
+
+        if (optionalGroup.isPresent()) {
+            groupDel = optionalGroup.get();
+        }
 
         assertThat(groupDel).isNull();
     }
 
     @Test
-    void getById() {
-        when(groupRepo.findById(1L))
-                .thenReturn(Optional.of(getGroup()));
-
-        assertThat(groupService.getById(1L).getGroupId()).isEqualTo(1L);
-    }
-
-    @Test
     void getAll() {
-        when(groupRepo.findAll())
-                .thenReturn(getGroupList());
+        when(groupRepo.findAll()).thenReturn(getGroupList());
 
         List<Group> all = groupService.getAll();
 
@@ -73,9 +74,7 @@ class GroupServiceImplTest {
 
     @Test
     void update() {
-        when(groupRepo.findById(1L))
-                .thenReturn(Optional.of(getGroup()));
-
+        when(groupRepo.findById(1L)).thenReturn(Optional.of(getGroup()));
         when(groupRepo.save(any(Group.class))).then(returnsFirstArg());
 
         Group group = getGroup();

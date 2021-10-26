@@ -1,7 +1,6 @@
 package com.example.university.service.impl;
 
 import com.example.university.model.Audience;
-import com.example.university.model.Group;
 import com.example.university.repository.AudienceRepository;
 import com.example.university.service.AudienceService;
 import org.junit.jupiter.api.Test;
@@ -25,15 +24,14 @@ import static org.mockito.Mockito.when;
 class AudienceServiceImplTest {
 
     @MockBean
-    private AudienceRepository audienceRepository;
+    private AudienceRepository audienceRepo;
 
     @Autowired
     private AudienceService audienceService;
 
     @Test
     void getById() {
-        when(audienceRepository.findById(1L))
-                .thenReturn(Optional.of(getAudience()));
+        when(audienceRepo.findById(1L)).thenReturn(Optional.of(getAudience()));
 
         assertThat(audienceService.getById(1L).getAudienceId()).isEqualTo(1L);
     }
@@ -47,9 +45,25 @@ class AudienceServiceImplTest {
     }
 
     @Test
+    void delete() {
+        Audience audience = audienceRepo.getById(1L);
+
+        audienceRepo.delete(audience);
+
+        Audience audienceDel = null;
+
+        Optional<Audience> optionalAudience = audienceRepo.findById(1L);
+
+        if (optionalAudience.isPresent()) {
+            audienceDel = optionalAudience.get();
+        }
+
+        assertThat(audienceDel).isNull();
+    }
+
+    @Test
     void getAll() {
-        when(audienceRepository.findAll())
-                .thenReturn(getAudienceList());
+        when(audienceRepo.findAll()).thenReturn(getAudienceList());
 
         List<Audience> all = audienceService.getAll();
 
@@ -60,10 +74,8 @@ class AudienceServiceImplTest {
 
     @Test
     void update() {
-        when(audienceRepository.findById(1L))
-                .thenReturn(Optional.of(getAudience()));
-
-        when(audienceRepository.save(any(Audience.class))).then(returnsFirstArg());
+        when(audienceRepo.findById(1L)).thenReturn(Optional.of(getAudience()));
+        when(audienceRepo.save(any(Audience.class))).then(returnsFirstArg());
 
         Audience audience = getAudience();
         Audience audienceData = getAudienceData();
